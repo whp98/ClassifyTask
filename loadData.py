@@ -25,91 +25,126 @@ print(np.concatenate((data, label), axis=1)[0])
 for a in np.concatenate((data, label), axis=1):
     print(a)
 
-# 暂定每种分类10个数据做训练
-n = 10
-# 清空文件
-def clear():
-    if os.path.exists('trainout.txt'):
-        os.remove('trainout.txt')
-    if os.path.exists('testout.txt'):
-        os.remove('testout.txt')
-clear()
-# 定义一个方法来获取处理所有数据
+
+print(data[0][0])
 trainfilename="trainout.txt"
 testfilename="testout.txt"
-trainfile = open(trainfilename,'a')
-testfile = open(testfilename,'a')
 
 
-# 按照数据行来处理文件
-# 先统计各个类别的数据数目
-label1=0
-label2=0
-label3=0
-label4=0
-for i in range(0,data.shape[0]):
-    if (label[i] - 1) < 0.001:
-        label1=label1+1
-    if (label[i] - 2) < 0.001:
-        label2=label2+1
-    if (label[i] - 3) < 0.001:
-        label3=label3+1
-    if (label[i] - 4) < 0.001:
-        label4=label4+1
+# 清空文件
+def clear(a,b):
+    if os.path.exists(a):
+        os.remove(a)
+    if os.path.exists(b):
+        os.remove(b)
 
-print(label1)
-print(label2)
-print(label3)
-print(label4)
-print(label1+label2+label3+label4)
+#一键清空
+def easyclear():
+    clear(trainfilename, testfilename)
+
+
+
+def getlabelnum():
+    # 按照数据行来处理文件
+    # 先统计各个类别的数据数目
+    label1 = 0
+    label2 = 0
+    label3 = 0
+    label4 = 0
+    for i in range(0, data.shape[0]):
+        if (label[i] - 1) < 0.001:
+            label1 = label1 + 1
+        if (label[i] - 2) < 0.001:
+            label2 = label2 + 1
+        if (label[i] - 3) < 0.001:
+            label3 = label3 + 1
+        if (label[i] - 4) < 0.001:
+            label4 = label4 + 1
+
+    return label1,label2,label3,label4
 # 第二次循环直接将数据写入文件中
 # 定义四个数来计数
-la1=0
-la2=0
-la3=0
-la4=0
-for i in range(0,data.shape[0]):
-    #拼接一行字符串
-    line = str(int(label[i]))+" "
-    for j in range(1,data.shape[1]+1):
-        line = line+" "+str(j)+":"+str(data[i][j-1])
-    line = line+"\n"
-    #判断标签是否超过计数器，这将影响写入位置
-    if (label[i] - 1) < 0.001:
-        la1=la1+1
-        if(la1<label1*0.8):
-            trainfile.write(line)
-        else:
-            testfile.write(line)
-    if (label[i] - 2) < 0.001:
-        la2 = la2 + 1
-        if (la2 < label2 * 0.8):
-            trainfile.write(line)
-        else:
-            testfile.write(line)
-    if (label[i] - 3) < 0.001:
-        la3 = la3 + 1
-        if (la3 < label3 * 0.8):
-            trainfile.write(line)
-        else:
-            testfile.write(line)
-    if (label[i] - 4) < 0.001:
-        la4 = la4 + 1
-        if (la4 < label4 * 0.8):
-            trainfile.write(line)
-        else:
-            testfile.write(line)
-trainfile.close()
-testfile.close()
+def oldgenFile():
+    la1 = 0
+    la2 = 0
+    la3 = 0
+    la4 = 0
+    label1, label2, label3, label4 = getlabelnum()
+    easyclear()
+    trainfile = open(trainfilename, 'a')
+    testfile = open(testfilename, 'a')
+    for i in range(0, data.shape[0]):
+        # 拼接一行字符串
+        line = str(int(label[i])) + " "
+        for j in range(1, data.shape[1] + 1):
+            line = line + " " + str(j) + ":" + str(data[i][j - 1])
+        line = line + "\n"
+        # 判断标签是否超过计数器，这将影响写入位置
+        if (label[i] - 1) < 0.001:
+            la1 = la1 + 1
+            if (la1 < label1 * 0.8):
+                trainfile.write(line)
+            else:
+                testfile.write(line)
+        if (label[i] - 2) < 0.001:
+            la2 = la2 + 1
+            if (la2 < label2 * 0.8):
+                trainfile.write(line)
+            else:
+                testfile.write(line)
+        if (label[i] - 3) < 0.001:
+            la3 = la3 + 1
+            if (la3 < label3 * 0.8):
+                trainfile.write(line)
+            else:
+                testfile.write(line)
+        if (label[i] - 4) < 0.001:
+            la4 = la4 + 1
+            if (la4 < label4 * 0.8):
+                trainfile.write(line)
+            else:
+                testfile.write(line)
+    trainfile.close()
+    testfile.close()
 
+
+
+# 留一法交叉验证
+def liuyiyanzheng():
+    # 用于存储每次迭代训练序列的值
+    vals = []
+    for a in range(0, data.shape[0]):
+        easyclear()
+        trainfile = open(trainfilename, 'a')
+        testfile = open(testfilename, 'a')
+        for i in range(0,data.shape[0]):
+            # 每一行的数据
+            line = str(int(label[i])) + " "
+            for j in range(1, data.shape[1] + 1):
+                line = line + " " + str(j) + ":" + str(data[i][j - 1])
+            line = line + "\n"
+            if (i!=a):
+                trainfile.write(line)
+            else:
+                testfile.write(line)
+        trainfile.close()
+        testfile.close()
+        vals.append(pred())
+    sum = 0
+    for b in vals:
+        sum = sum + b
+    return sum/(len(vals))
 
 
 def pred():
-    y,x = svm_read_problem('trainout.txt')
+    y,x = svm_read_problem(trainfilename)
     m = svm_train(y[0:], x[0:], '-c 4')
-    a,b = svm_read_problem('testout.txt')
+    a,b = svm_read_problem(testfilename)
     p_label, p_acc, p_val = svm_predict(a[:], b[:], m)
     print(p_label)
     print(p_acc)
     print(p_val)
+    return p_acc[0]
+
+oldgenFile()
 pred()
