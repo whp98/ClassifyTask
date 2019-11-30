@@ -24,6 +24,19 @@ data = load_data["data"]
 label = load_data["label"]
 
 
+#数据方差滤波
+def lvbofangcha(nparray):
+    fangcha = np.var(nparray,axis=0)
+    print(len(fangcha))
+    de=[]
+    for i in range(0,nparray.shape[1]):
+        if(fangcha[i]<0.25):
+            de.append(i)
+    print(len(de))
+    print(len(fangcha)-len(de))
+    return np.delete(nparray,de,axis=1)
+data=lvbofangcha(data)
+
 # 归一化
 def guiyihuanp(nparray):
     x_normed = nparray / nparray.max(axis=0)
@@ -87,3 +100,4 @@ def liuyiyanzhengNew():
 
 getallfile()
 print("误差值：",100-liuyiyanzhengNew())
+
