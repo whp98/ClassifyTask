@@ -4,7 +4,7 @@ import scipy.io as scio
 import numpy as np
 import os
 from sklearn.decomposition import PCA
-pca=PCA(n_components=3)
+pca=PCA(n_components=6)
 
 # 数据预处理
 dataFile = '作业2_Class_4_data_label.mat'
